@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 
 import { hashPassword } from '../services/password.service';
+import { generateToken } from '../services/auth.service';
 import prisma from '../models/user';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
@@ -16,5 +17,11 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         password: hashedPassword,
       },
     });
-  } catch (error) {}
+
+    const token = generateToken(user);
+    res.status(201).json({ token });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Hubo un error en el registro.' });
+  }
 };
